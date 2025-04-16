@@ -109,6 +109,7 @@ extra_deps['gpu-flash2'] = [
 ]
 
 extra_deps['gpu'] = copy.deepcopy(extra_deps['gpu-flash2'])
+extra_deps['gpu'].append('deepspeed==0.15.4')
 
 extra_deps['peft'] = [
     'mosaicml[peft]>=0.30.0,<0.31',
