@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import hydra
 import tempfile
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
@@ -343,5 +344,10 @@ def convert_composer_to_hf(args: Namespace) -> None:
         delattr(MPTForCausalLM, '_auto_class')
 
 
-if __name__ == '__main__':
-    convert_composer_to_hf(parse_args())
+@hydra.main(version_base=None)
+def main(config):
+    args = config.variables.model_convertation
+    convert_composer_to_hf(args)
+
+if __name__ == "__main__":
+    main()
