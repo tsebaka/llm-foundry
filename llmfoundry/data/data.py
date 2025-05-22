@@ -151,23 +151,32 @@ class ConcatTokensDataset(AbstractConcatTokensDataset):
         self.hf_dataset = hf_dataset
         super().__init__(tokenizer, max_length, bos_text, eos_text, no_wrap)
 
-    def __iter__(self) -> Iterable[dict[str, NDArray]]:
-        buffer = []
+    def __iter__(self):
         for sample in self.hf_dataset:
-            encoded = self.tokenizer(
-                sample['text'],
-                truncation=False,
-                padding=False,
-            )
-            iids = encoded['input_ids']
-            buffer = buffer + self.bos_tokens + iids + self.eos_tokens
-            while len(buffer) >= self.max_length:
-                concat_sample = buffer[:self.max_length]
-                buffer = buffer[self.max_length:] if self.should_wrap else []
-                yield {
-                    # convert to ndarray to store in MDS format
-                    'tokens': np.asarray(concat_sample, dtype=np.int32),
-                }
+            iids = self.tokenizer(sample['text'],
+                                 truncation=True,
+                                 max_length=self.max_length,
+                                 padding=False)['input_ids']
+            yield {
+                'tokens': np.asarray(iids, dtype=np.int32)
+            }
+    # def __iter__(self) -> Iterable[dict[str, NDArray]]:
+    #     buffer = []
+    #     for sample in self.hf_dataset:
+    #         encoded = self.tokenizer(
+    #             sample['text'],
+    #             truncation=False,
+    #             padding=False,
+    #         )
+    #         iids = encoded['input_ids']
+    #         buffer = buffer + self.bos_tokens + iids + self.eos_tokens
+    #         while len(buffer) >= self.max_length:
+    #             concat_sample = buffer[:self.max_length]
+    #             buffer = buffer[self.max_length:] if self.should_wrap else []
+    #             yield {
+    #                 # convert to ndarray to store in MDS format
+    #                 'tokens': np.asarray(concat_sample, dtype=np.int32),
+    #             }
 
 
 def stream_remote_local_validate(
