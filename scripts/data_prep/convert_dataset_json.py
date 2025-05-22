@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Streaming dataset conversion scripts for json files."""
+import hydra
+
 from argparse import ArgumentParser, Namespace
 
 from llmfoundry.command_utils import convert_dataset_json_from_args
@@ -34,16 +36,21 @@ def parse_args() -> Namespace:
     return parsed
 
 
-if __name__ == '__main__':
-    args = parse_args()
+@hydra.main(version_base=None)
+def main(config):
+    args = config
     convert_dataset_json_from_args(
-        path=args.path,
-        out_root=args.out_root,
-        compression=args.compression,
-        concat_tokens=args.concat_tokens,
-        split=args.split,
-        tokenizer=args.tokenizer,
-        bos_text=args.bos_text,
-        eos_text=args.eos_text,
-        no_wrap=args.no_wrap,
+            path=args.variables.streaming_convertation.path,
+            out_root=args.variables.streaming_convertation.out_root,
+            compression=args.variables.streaming_convertation.compression,
+            concat_tokens=args.variables.streaming_convertation.concat_tokens,
+            split=args.variables.streaming_convertation.split,
+            tokenizer=args.variables.streaming_convertation.tokenizer,
+            bos_text=args.variables.streaming_convertation.bos_text,
+            eos_text=args.variables.streaming_convertation.eos_text,
+            no_wrap=args.variables.streaming_convertation.no_wrap,
     )
+    
+
+if __name__ == "__main__":
+    main()
